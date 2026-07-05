@@ -7,7 +7,7 @@ Audit chain-of-thought faithfulness in LLM outputs using structured evaluation.
 ```bash
 cp .env.example .env
 # Add your GROQ_API_KEY to .env
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 ## Structure
