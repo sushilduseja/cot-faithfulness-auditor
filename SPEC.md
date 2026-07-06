@@ -91,6 +91,7 @@ All tunables via environment variables:
 ## Tests
 
 ```bash
+pip install -e .
 NUM_PROBLEMS=20 python -m pytest tests/ -v
 NUM_PROBLEMS=150 python -m pytest tests/ -v
 ```
