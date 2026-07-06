@@ -13,6 +13,7 @@ class Config:
     num_workers: int = 4
     api_timeout: int = 60
     retry_max: int = 5
+    inter_request_delay: float = 0.3
 
     def __post_init__(self):
         self.num_problems = int(os.environ.get("NUM_PROBLEMS", self.num_problems))
@@ -23,6 +24,7 @@ class Config:
         self.num_workers = int(os.environ.get("NUM_WORKERS", self.num_workers))
         self.api_timeout = int(os.environ.get("API_TIMEOUT", self.api_timeout))
         self.retry_max = int(os.environ.get("RETRY_MAX", self.retry_max))
+        self.inter_request_delay = float(os.environ.get("INTER_REQUEST_DELAY", self.inter_request_delay))
 
 
 config = Config()

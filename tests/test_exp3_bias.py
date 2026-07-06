@@ -1,6 +1,5 @@
-import json, sys
+import json
 from pathlib import Path
-sys.path.insert(0, ".")
 from src.config import config
 
 DATA_DIR = Path("data")

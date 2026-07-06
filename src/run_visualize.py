@@ -1,6 +1,5 @@
 """06 — Generate publication-quality charts from experiment outputs."""
-import json, random, sys
-sys.path.insert(0, ".")
+import json, random
 from pathlib import Path
 
 import matplotlib

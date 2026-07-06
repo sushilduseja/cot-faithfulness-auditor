@@ -10,6 +10,17 @@ dependencies = [
     "pandas>=2.0.0",
 ]
 
+[project.scripts]
+cot-prep = "src.experiments.data_prep:main"
+cot-baseline = "src.experiments.baseline:main"
+cot-truncation = "src.experiments.truncation:main"
+cot-corruption = "src.experiments.corruption:main"
+cot-bias = "src.experiments.bias:main"
+cot-visualize = "src.run_visualize:main"
+
 [build-system]
 requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -1,5 +1,5 @@
 """Experiment 1: Progressive truncation — truncate CoT at % points, force continuation."""
-import json, time
+import time
 from dataclasses import asdict
 from pathlib import Path
 from src.config import config
@@ -31,7 +31,7 @@ def process(idx, entry, client):
         ])
         ans = extract_answer(resp_text or "")
         truncations.append(TruncationPoint(pct=pct, truncated_cot=truncated, generated_answer=ans))
-        time.sleep(0.3)
+        time.sleep(config.inter_request_delay)
     return asdict(TruncationResult(
         problem_text=entry["problem_text"],
         correct_answer=str(entry["correct_answer"]),

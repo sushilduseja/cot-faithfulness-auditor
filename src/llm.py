@@ -22,13 +22,14 @@ class LLMClient:
         self.nvidia_model = config.nvidia_model
 
     def generate(self, messages) -> tuple[str | None, str]:
-        """Returns (text, provider). Tries Groq first, falls back to NVIDIA."""
-        text = self._try_groq(messages)
-        if text:
-            return text, "groq"
-        text = self._try_nvidia(messages)
-        if text:
-            return text, "nvidia"
+        """Returns (text, provider). Respects primary_provider ordering."""
+        providers = [("groq", self._try_groq), ("nvidia", self._try_nvidia)]
+        if config.primary_provider == "nvidia":
+            providers.reverse()
+        for name, fn in providers:
+            text = fn(messages)
+            if text:
+                return text, name
         return None, "error"
 
     def _try_groq(self, messages):

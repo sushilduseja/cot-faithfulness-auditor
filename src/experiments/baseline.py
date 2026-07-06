@@ -1,6 +1,5 @@
 """Baseline generation — parallel API calls with configurable workers/problems."""
 import sys, json, time, logging
-sys.path.insert(0, ".")
 from dataclasses import asdict
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -33,7 +32,7 @@ def process_one(idx: int, problem: dict) -> BaselineResult:
         ])
         ans = extract_answer(resp_text or "")
         runs.append(Run(cot=resp_text or "", answer=ans, provider=provider))
-        time.sleep(0.3)
+        time.sleep(config.inter_request_delay)
 
     answers = [r.answer for r in runs]
     stable = len(set(answers)) == 1 and all(a is not None for a in answers)
@@ -51,7 +50,8 @@ def process_one(idx: int, problem: dict) -> BaselineResult:
     )
 
 
-def main(limit=None):
+def main():
+    limit = int(sys.argv[1]) if len(sys.argv) > 1 else None
     with open(DATA_DIR / "perturbed_problems.json") as f:
         problems = json.load(f)
     if limit:
@@ -92,6 +92,4 @@ def main(limit=None):
 
 
 if __name__ == "__main__":
-    import sys
-    limit = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    main(limit=limit)
+    main()

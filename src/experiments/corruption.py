@@ -1,5 +1,5 @@
-"""Experiment 2: Token-level corruption — pure rules + NVIDIA NIM (no local model)."""
-import json, random
+"""Experiment 2: Text-level string corruption — pure rules + Groq/NVIDIA API."""
+import random
 from dataclasses import asdict
 from pathlib import Path
 from src.config import config

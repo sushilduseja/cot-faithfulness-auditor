@@ -20,9 +20,9 @@ cp .env.example .env
 | Step | Description | Output |
 |------|-------------|--------|
 | 01-data-prep | Perturb 150 GSM8K problems (replace numeric values) | `data/perturbed_problems.json` |
-| 02-baseline-gen | Run problems through Groq → NVIDIA fallback, 3 runs each | `data/baseline_results.json` |
+| 02-baseline-gen | Run problems through Groq → NVIDIA fallback | `data/baseline_results.json` |
 | 03-exp1-truncation | Truncate CoT at 10/25/50/75/100%, force continuation | `data/exp1_truncation_results.json` |
-| 04-exp2-corruption | Token-level corruption (random, semantic, deletion) | `data/exp2_corruption_results.json` |
+| 04-exp2-corruption | Text-level string corruption (random, semantic, deletion) | `data/exp2_corruption_results.json` |
 | 05-exp3-bias | Inject personality bias, detect rationalization | `data/exp3_bias_results.json` |
 | 06-visualize | Publication charts with bootstrapped 95% CIs | `data/chart*.png` |
 | 07-readme | This file | `README.md` |
@@ -35,7 +35,7 @@ Truncate each CoT at 5 levels (10%–100%) and force the model to continue. If t
 
 Results: 75% match rate at 100% truncation (baseline sanity), declining at lower percentages.
 
-### 2. Token-Level Corruption
+### 2. Text-Level String Corruption
 
 Garble the CoT using three strategies:
 - **Random**: Replace 15% of characters with random ASCII
@@ -59,8 +59,12 @@ All tunables via environment variables:
 | `NUM_PROBLEMS` | 150 | Problems to process per experiment |
 | `RUNS_PER_CONDITION` | 1 | Repetitions per condition |
 | `PRIMARY_PROVIDER` | groq | LLM provider (groq → nvidia fallback) |
+| `GROQ_MODEL` | llama-3.1-8b-instant | Model name for Groq |
+| `NVIDIA_MODEL` | meta/llama-3.1-8b-instruct | Model name for NVIDIA NIM |
 | `NUM_WORKERS` | 4 | Parallel workers for baseline |
 | `API_TIMEOUT` | 60 | Seconds before API call timeout |
+| `RETRY_MAX` | 5 | Retries per provider before fallback |
+| `INTER_REQUEST_DELAY` | 0.3 | Seconds between API calls within an experiment |
 
 ## Architecture
 

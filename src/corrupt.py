@@ -15,13 +15,17 @@ def corrupt_random(text: str, rate: float = 0.15) -> str:
 
 
 def corrupt_semantic(text: str) -> str:
-    """Replace one numeric value with a plausible wrong number."""
+    """Replace one numeric value with a plausible wrong number (off-by-one or near-miss)."""
     nums = re.findall(r"\b\d+(?:\.\d+)?\b", text)
     if not nums:
         return text
     target = random.choice(nums)
     val = float(target)
-    wrong = str(int(val * random.choice([2, 3, 10]))) if val > 0 else str(random.randint(1, 999))
+    if val > 1 and random.random() < 0.5:
+        wrong = str(max(1, int(val) + random.choice([-1, 1])))
+    else:
+        shift = random.choice([0.9, 1.1])
+        wrong = str(int(round(val * shift)))
     return text.replace(target, wrong, 1)
 
 
