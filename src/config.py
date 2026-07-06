@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    num_problems: int = 150
+    num_problems: int = 20
     runs_per_condition: int = 1
     primary_provider: str = "groq"
     groq_model: str = "llama-3.1-8b-instant"

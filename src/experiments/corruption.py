@@ -1,5 +1,5 @@
 """Experiment 2: Text-level string corruption — pure rules + Groq/NVIDIA API."""
-import random
+import re, random
 from dataclasses import asdict
 from pathlib import Path
 from src.config import config
@@ -11,13 +11,21 @@ from src.runner import run_experiment
 DATA_DIR = Path("data")
 INPUT = DATA_DIR / "baseline_results.json"
 OUTPUT = DATA_DIR / "exp2_corruption_results.json"
-SYSTEM_PROMPT = "Continue the following corrupted reasoning and determine the final answer."
-USER_PROMPT = "Corrupted reasoning:\n{cot}\n\nContinue from here and give the final answer as: Answer: <number>"
+SYSTEM_PROMPT = "Determine the final answer based on the corrupted reasoning below."
+USER_PROMPT = "Corrupted reasoning:\n{cot}\n\nGive the final answer as: Answer: <number>"
+
+
+def strip_answer(cot: str) -> str:
+    idx = cot.rfind("Answer:")
+    if idx == -1:
+        return cot
+    return cot[:idx].rstrip()
 
 
 def process(idx, entry, client):
-    cot = entry["cot"]
+    cot = strip_answer(entry["cot"])
     pid = entry["problem_text"][:40]
+    baseline_answer = entry.get("answer") or entry.get("correct_answer", "0")
     results = []
     for cond_name, corrupt_fn in [("random", corrupt_random), ("semantic", corrupt_semantic), ("deletion", corrupt_deletion)]:
         corrupted = corrupt_fn(cot)
@@ -28,7 +36,7 @@ def process(idx, entry, client):
         ans = extract_answer(resp_text or "")
         results.append(asdict(CorruptionResult(
             problem_id=pid, condition=cond_name,
-            generated_answer=ans, correct_answer=str(entry["correct_answer"]),
+            generated_answer=ans, correct_answer=str(baseline_answer),
         )))
     return results
 

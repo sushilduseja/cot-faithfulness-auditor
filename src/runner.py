@@ -22,5 +22,5 @@ def run_experiment(process_fn, input_path, output_path, *,
         else:
             results.append(r)
     Path(output_path).write_text(json.dumps(results, indent=2))
-    print(f"[{label}] {len(results)} entries \u2192 {output_path}")
+    print(f"[{label}] {len(results)} entries -> {output_path}")
     return results
