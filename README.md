@@ -11,7 +11,7 @@ If CoT is epiphenomenal â€” generated *after* the answer is already determined â
 ```bash
 uv venv
 uv pip install -e .
-cp .env.example .env
+cp env.example .env
 # Edit .env with your Groq and NVIDIA API keys
 ```
 
