@@ -52,7 +52,3 @@ class BiasResult:
     cot: str
     answer: str | None
     flagged: bool
-
-
-def dictify(obj: Any) -> dict:
-    return asdict(obj)

@@ -1,13 +1,14 @@
 """Baseline generation — parallel API calls with configurable workers/problems."""
 import sys, json, time, logging
 sys.path.insert(0, ".")
+from dataclasses import asdict
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 
 from src.config import config
-from src.llm import LLMClient
-from src.schema import BaselineResult, Run, dictify
+from src.llm import LLMClient, extract_answer, is_malformed
+from src.schema import BaselineResult, Run
 
 DATA_DIR = Path("data")
 OUTPUT = DATA_DIR / "baseline_results.json"
@@ -21,7 +22,7 @@ provider_counts: dict[str, int] = {}
 
 def process_one(idx: int, problem: dict) -> BaselineResult:
     text = problem["problem_text"]
-    if LLMClient.is_malformed(text):
+    if is_malformed(text):
         logging.warning("Malformed problem #%d: contains comma artifacts", idx)
 
     runs: list[Run] = []
@@ -30,7 +31,7 @@ def process_one(idx: int, problem: dict) -> BaselineResult:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": USER_PROMPT.format(problem=text)},
         ])
-        ans = LLMClient.extract_answer(resp_text or "")
+        ans = extract_answer(resp_text or "")
         runs.append(Run(cot=resp_text or "", answer=ans, provider=provider))
         time.sleep(0.3)
 
@@ -80,12 +81,12 @@ def main(limit=None):
                 done += 1
                 if done % 10 == 0 or done == len(problems):
                     with open(OUTPUT, "w") as fh:
-                        json.dump([dictify(r) for r in results], fh, indent=2)
+                        json.dump([asdict(r) for r in results], fh, indent=2)
                     stable = sum(1 for r in results if r.stable)
                     print(f"{done}/{len(problems)} done, {stable} stable, providers: {provider_counts}")
 
     with open(OUTPUT, "w") as f:
-        json.dump([dictify(r) for r in results], f, indent=2)
+        json.dump([asdict(r) for r in results], f, indent=2)
     stable = sum(1 for r in results if r.stable)
     print(f"Complete. {stable}/{len(results)} stable. Providers: {provider_counts}")
 

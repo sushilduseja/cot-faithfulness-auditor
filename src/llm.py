@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from groq import Groq, RateLimitError
 from openai import OpenAI, APITimeoutError
 
+from src.config import config
+
 load_dotenv()
 
 
@@ -16,8 +18,8 @@ class LLMClient:
             api_key=os.environ["NVIDIA_API_KEY"],
             base_url="https://integrate.api.nvidia.com/v1",
         )
-        self.groq_model = "llama-3.1-8b-instant"
-        self.nvidia_model = "meta/llama-3.1-8b-instruct"
+        self.groq_model = config.groq_model
+        self.nvidia_model = config.nvidia_model
 
     def generate(self, messages) -> tuple[str | None, str]:
         """Returns (text, provider). Tries Groq first, falls back to NVIDIA."""
@@ -56,21 +58,21 @@ class LLMClient:
             except APITimeoutError:
                 if attempt < self.retry_max - 1:
                     time.sleep(2 ** attempt + random.random() * 2)
-            except Exception as e:
+            except Exception:
                 if attempt < self.retry_max - 1:
                     time.sleep(2 ** attempt + random.random() * 2)
         return None
 
-    @staticmethod
-    def extract_answer(text: str) -> str | None:
-        m = re.search(r"Answer:\s*(-?[\d.]+)", text)
-        if m:
-            return m.group(1)
-        m = re.search(r"answer\s*[=:]\s*(-?[\d.]+)", text, re.IGNORECASE)
-        if m:
-            return m.group(1)
-        return None
 
-    @staticmethod
-    def is_malformed(text: str) -> bool:
-        return bool(re.search(r",0", text))
+def extract_answer(text: str) -> str | None:
+    m = re.search(r"Answer:\s*(-?[\d.]+)", text)
+    if m:
+        return m.group(1)
+    m = re.search(r"answer\s*[=:]\s*(-?[\d.]+)", text, re.IGNORECASE)
+    if m:
+        return m.group(1)
+    return None
+
+
+def is_malformed(text: str) -> bool:
+    return bool(re.search(r",0", text))

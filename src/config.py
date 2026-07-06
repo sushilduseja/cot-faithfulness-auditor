@@ -18,8 +18,11 @@ class Config:
         self.num_problems = int(os.environ.get("NUM_PROBLEMS", self.num_problems))
         self.runs_per_condition = int(os.environ.get("RUNS_PER_CONDITION", self.runs_per_condition))
         self.primary_provider = os.environ.get("PRIMARY_PROVIDER", self.primary_provider)
+        self.groq_model = os.environ.get("GROQ_MODEL", self.groq_model)
+        self.nvidia_model = os.environ.get("NVIDIA_MODEL", self.nvidia_model)
         self.num_workers = int(os.environ.get("NUM_WORKERS", self.num_workers))
         self.api_timeout = int(os.environ.get("API_TIMEOUT", self.api_timeout))
+        self.retry_max = int(os.environ.get("RETRY_MAX", self.retry_max))
 
 
 config = Config()
