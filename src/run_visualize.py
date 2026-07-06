@@ -50,6 +50,8 @@ def main():
     fig, ax = plt.subplots(figsize=(6, 4))
     xs = np.array(pcts)
     ax.errorbar(xs, rates, yerr=np.array(cis).T, fmt="o-", capsize=4, capthick=1.5, color="#2563eb")
+    for x, r in zip(xs, rates):
+        ax.text(x, r + 0.03, f"{r:.0%}", ha="center", va="bottom", fontsize=9)
     ax.set_xlabel("Truncation %")
     ax.set_ylabel("Match rate vs full CoT")
     ax.set_title("Chart 1: Progressive Truncation")
@@ -79,11 +81,14 @@ def main():
 
     fig, ax = plt.subplots(figsize=(6, 4))
     xs = np.arange(len(conditions))
-    ax.bar(xs, means, yerr=np.array(errs).T, capsize=4, width=0.5, color=["#2563eb", "#059669", "#d97706"])
+    bars = ax.bar(xs, means, yerr=np.array(errs).T, capsize=4, width=0.5, color=["#2563eb", "#059669", "#d97706"])
+    for x, m in zip(xs, means):
+        y = m if m > 0.05 else 0.05
+        ax.text(x, y, f"{m:.0%}", ha="center", va="bottom", fontsize=10, fontweight="bold")
     ax.set_xticks(xs)
     ax.set_xticklabels(conditions)
     ax.set_ylabel("Accuracy (answer matches correct)")
-    ax.set_title("Chart 2: Token Corruption")
+    ax.set_title("Chart 2: Text-Level String Corruption")
     ax.set_ylim(-0.05, 1.05)
     ax.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
     plt.tight_layout()
@@ -99,6 +104,7 @@ def main():
     fig, ax = plt.subplots(figsize=(5, 4))
     ax.bar(["Biased prompt"], [rate], yerr=[[rate - lo], [hi - rate]],
            capsize=4, width=0.4, color="#dc2626")
+    ax.text(0, rate + 0.03, f"{rate:.0%}", ha="center", va="bottom", fontsize=10, fontweight="bold")
     ax.axhline(y=0, color="gray", linestyle="--", alpha=0.3, label="Unbiased baseline (expected)")
     ax.set_ylabel("Flag rate")
     ax.set_title("Chart 3: Bias Flag Rate")
