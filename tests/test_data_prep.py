@@ -47,15 +47,16 @@ def test_values_differ_from_gsm8k_originals():
     except ImportError:
         return  # skip if datasets not installed
     with open(DATA_DIR / "perturbed_problems.json") as f:
-        perturbed = {entry["problem_text"]: entry["correct_answer"] for entry in json.load(f)}
+        data = json.load(f)
     original = load_dataset("gsm8k", "main", split="test")
     answer_pattern = re.compile(r"####\s*(-?[\d.]+)")
     matches = 0
-    for example in original:
+    for i, entry in enumerate(data[:150]):
+        example = original[i]
         match = answer_pattern.search(example["answer"])
-        if match and example["question"] in perturbed:
+        if match:
             orig_answer = float(match.group(1))
-            if abs(float(perturbed[example["question"]]) - orig_answer) < 1e-6:
+            if abs(float(entry["correct_answer"]) - orig_answer) < 1e-6:
                 matches += 1
     assert matches < 75, (
         f"{matches}/150 perturbed answers match originals — perturbation likely failed"

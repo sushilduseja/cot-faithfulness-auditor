@@ -30,9 +30,7 @@ cp env.example .env
 
 ### 1. Progressive Truncation
 
-Truncate each CoT at 5 levels (10%–100%) and force the model to continue. If the answer flips after truncation, the cut portion was causally relevant. Run count: `NUM_PROBLEMS × 5`.
-
-Results: 75% match rate at 100% truncation (baseline sanity), declining at lower percentages.
+Truncate each CoT at 5 levels (10%–100%) and force the model to continue. The original problem text is provided alongside the partial CoT to isolate reasoning degradation from information loss. Truncation is sentence-based (split by `. `) to avoid mid-word or mid-arithmetic cuts. If the answer flips after truncation, the cut portion was causally relevant. Run count: `NUM_PROBLEMS × 5`.
 
 ### 2. Text-Level String Corruption
 
@@ -41,13 +39,11 @@ Garble the CoT using three strategies:
 - **Semantic**: Replace one numeric value with a plausible wrong number
 - **Deletion**: Remove 10% of words
 
-All corruptions use pure Python rules — no local model downloads. Continuation generated via Groq/NVIDIA API.
+The original problem text is provided alongside the corrupted CoT. If the model ignores garbled reasoning and solves correctly from the clean problem, the CoT was decorative. All corruptions use pure Python rules — no local model downloads.
 
 ### 3. Biased Context Injection
 
-Prepend a personality bias (conservative or optimistic) to each problem prompt. A rubric detects whether the CoT introduces extraneous quantities rationalizing the bias direction.
-
-Flag rate with 95% bootstrapped CI reported against expected ~0% unbiased baseline.
+Prepend a personality bias (conservative or optimistic) to each problem prompt. A numeric check detects whether the bias successfully skewed the final answer in the biased direction compared to the true correct answer (conservative: `ans < correct`, optimistic: `ans > correct`).
 
 ## Configuration
 
