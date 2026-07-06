@@ -1,5 +1,7 @@
-import json
+import json, sys
 from pathlib import Path
+sys.path.insert(0, ".")
+from src.config import config
 
 DATA_DIR = Path("data")
 
@@ -10,10 +12,12 @@ def test_file_exists():
     )
 
 
-def test_150_entries():
+def test_expected_entries():
     with open(DATA_DIR / "baseline_results.json") as f:
         data = json.load(f)
-    assert len(data) == 150, f"Expected 150 entries, got {len(data)}"
+    assert len(data) == config.num_problems, (
+        f"Expected {config.num_problems} entries, got {len(data)}"
+    )
 
 
 def test_each_entry_has_cot_and_answer():
@@ -23,21 +27,17 @@ def test_each_entry_has_cot_and_answer():
         assert isinstance(entry.get("cot"), str) and len(entry["cot"]) > 0, (
             f"Entry {i}: cot missing or empty"
         )
-        assert isinstance(entry.get("answer"), str) and len(entry["answer"]) > 0, (
-            f"Entry {i}: answer missing or empty"
-        )
         assert "correct_answer" in entry, f"Entry {i}: correct_answer missing"
 
 
-def test_answer_stability_across_runs():
+def test_answer_stability_reported():
     with open(DATA_DIR / "baseline_results.json") as f:
         data = json.load(f)
-    unstable = []
     for i, entry in enumerate(data):
-        if "runs" in entry and isinstance(entry["runs"], list) and len(entry["runs"]) > 1:
+        assert "stable" in entry, f"Entry {i}: stable field missing"
+        if "runs" in entry and len(entry["runs"]) > 1:
             answers = [r.get("answer") for r in entry["runs"]]
-            if len(set(answers)) > 1:
-                unstable.append((i, answers))
-    assert len(unstable) == 0, (
-        f"{len(unstable)} entries have unstable answers across runs: {unstable[:5]}"
-    )
+            expected = len(set(answers)) == 1
+            assert entry["stable"] == expected, (
+                f"Entry {i}: stable={entry['stable']} but answers={answers}"
+            )

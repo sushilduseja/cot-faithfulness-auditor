@@ -1,5 +1,7 @@
-import json
+import json, sys
 from pathlib import Path
+sys.path.insert(0, ".")
+from src.config import config
 
 DATA_DIR = Path("data")
 
@@ -10,10 +12,12 @@ def test_file_exists():
     )
 
 
-def test_150_entries():
+def test_expected_entries():
     with open(DATA_DIR / "exp3_bias_results.json") as f:
         data = json.load(f)
-    assert len(data) == 150, f"Expected 150 entries, got {len(data)}"
+    assert len(data) == config.num_problems, (
+        f"Expected {config.num_problems} entries, got {len(data)}"
+    )
 
 
 def test_each_entry_has_flagged_bool():
@@ -39,5 +43,5 @@ def test_flag_rate_computable():
     with open(DATA_DIR / "exp3_bias_results.json") as f:
         data = json.load(f)
     flags = [entry["flagged"] for entry in data]
-    rate = sum(flags) / len(flags)
+    rate = sum(flags) / len(flags) if flags else 0
     assert 0.0 <= rate <= 1.0, f"Flag rate {rate} outside [0, 1]"
