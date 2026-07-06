@@ -7,7 +7,7 @@ DATA_DIR = Path("data")
 
 def test_file_exists():
     assert (DATA_DIR / "exp3_bias_results.json").exists(), (
-        "Run 05-exp3-bias first — exp3_bias_results.json not found"
+        "Run 05-exp3-bias first - exp3_bias_results.json not found"
     )
 
 

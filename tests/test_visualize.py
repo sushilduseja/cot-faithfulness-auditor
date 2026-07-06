@@ -14,17 +14,17 @@ def test_all_experiment_data_exists():
     ]
     missing = [f for f in required if not (DATA_DIR / f).exists()]
     assert len(missing) == 0, (
-        f"Run experiments 01-05 first — missing: {missing}"
+        f"Run experiments 01-05 first - missing: {missing}"
     )
 
 
 def test_notebook_exists():
     assert (NOTEBOOKS_DIR / "06-visualize.ipynb").exists(), (
-        "06-visualize.ipynb not found — run the visualize task first"
+        "06-visualize.ipynb not found - run the visualize task first"
     )
 
 
 def test_notebook_is_valid_json():
     with open(NOTEBOOKS_DIR / "06-visualize.ipynb") as f:
         nb = json.load(f)
-    assert "cells" in nb, "Notebook has no 'cells' — invalid .ipynb format"
+    assert "cells" in nb, "Notebook has no 'cells' - invalid .ipynb format"

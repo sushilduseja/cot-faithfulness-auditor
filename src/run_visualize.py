@@ -1,4 +1,4 @@
-"""06 — Generate publication-quality charts from experiment outputs."""
+"""06 - Generate publication-quality charts from experiment outputs."""
 import json, random
 from pathlib import Path
 
@@ -114,7 +114,7 @@ def main():
     plt.tight_layout()
     plt.savefig(DATA_DIR / "chart3_bias.png")
     plt.close()
-    print(f"Chart 3 saved. Flag rate: {rate:.0%} (95% CI: {lo:.0%}–{hi:.0%})")
+    print(f"Chart 3 saved. Flag rate: {rate:.0%} (95% CI: {lo:.0%}-{hi:.0%})")
 
     print(f"\nBaseline stability: {sum(1 for e in baseline if e.get('stable'))}/{len(baseline)}")
     print("All charts saved to data/chart*.png")

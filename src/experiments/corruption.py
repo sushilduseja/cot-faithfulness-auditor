@@ -1,4 +1,4 @@
-"""Experiment 2: Text-level string corruption — pure rules + Groq/NVIDIA API."""
+"""Experiment 2: Text-level string corruption - pure rules + Groq/NVIDIA API."""
 import re, random
 from dataclasses import asdict
 from pathlib import Path

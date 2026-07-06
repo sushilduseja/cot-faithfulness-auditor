@@ -7,7 +7,7 @@ EXPECTED_CONDITIONS = {"random", "semantic", "deletion"}
 
 def test_file_exists():
     assert (DATA_DIR / "exp2_corruption_results.json").exists(), (
-        "Run 04-exp2-corruption first — exp2_corruption_results.json not found"
+        "Run 04-exp2-corruption first - exp2_corruption_results.json not found"
     )
 
 

@@ -1,4 +1,4 @@
-"""Shared experiment runner — handles I/O, iteration, and progress."""
+"""Shared experiment runner - handles I/O, iteration, and progress."""
 import json
 from pathlib import Path
 from src.config import config

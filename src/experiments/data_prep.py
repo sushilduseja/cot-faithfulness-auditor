@@ -1,4 +1,4 @@
-"""Data preparation — pull GSM8K problems, perturb numeric values, store as JSON."""
+"""Data preparation - pull GSM8K problems, perturb numeric values, store as JSON."""
 import re, json, random
 from pathlib import Path
 from datasets import load_dataset

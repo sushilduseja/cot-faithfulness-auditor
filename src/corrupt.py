@@ -1,4 +1,4 @@
-"""Token-level corruption rules — pure functions, no model downloads."""
+"""Token-level corruption rules - pure functions, no model downloads."""
 import re
 import random
 

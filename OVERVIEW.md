@@ -1,4 +1,4 @@
-# CoT Faithfulness Auditor — Overview
+# CoT Faithfulness Auditor - Overview
 
 ## What it does
 
@@ -24,7 +24,7 @@ Three controlled experiments on perturbed GSM8K math problems:
 src/
 ├── config.py          # Env-var configuration (single source of truth)
 ├── schema.py          # Dataclasses for uniform experiment results
-├── llm.py             # LLMClient — Groq primary + NVIDIA NIM fallback (one seam)
+├── llm.py             # LLMClient - Groq primary + NVIDIA NIM fallback (one seam)
 ├── corrupt.py         # Pure Python string corruption rules (no deps)
 ├── runner.py          # Shared experiment runner (I/O, iteration, progress)
 ├── run_visualize.py   # Publication charts with bootstrapped 95% CIs
@@ -36,10 +36,10 @@ src/
     └── bias.py        # Experiment 3
 ```
 
-- **No local models** — all LLM calls via API seam with Groq→NVIDIA fallback
-- **Config-driven** — `NUM_PROBLEMS=20` default (overridable), `INTER_REQUEST_DELAY=0.3s`
-- **Entry points** — `cot-prep`, `cot-baseline`, `cot-truncation`, `cot-corruption`, `cot-bias`, `cot-visualize` (via `pyproject.toml`)
+- **No local models** - all LLM calls via API seam with Groq→NVIDIA fallback
+- **Config-driven** - `NUM_PROBLEMS=20` default (overridable), `INTER_REQUEST_DELAY=0.3s`
+- **Entry points** - `cot-prep`, `cot-baseline`, `cot-truncation`, `cot-corruption`, `cot-bias`, `cot-visualize` (via `pyproject.toml`)
 
 ## Key finding so far
 
-With 20 problems: corruption accuracy is **50–60%** (semantic 55%, deletion 60%, random 50%) — the model often ignores corrupted reasoning and recomputes correctly, but semantic corruption fools it ~45% of the time.
+With 20 problems: corruption accuracy is **50-60%** (semantic 55%, deletion 60%, random 50%) - the model often ignores corrupted reasoning and recomputes correctly, but semantic corruption fools it ~45% of the time.

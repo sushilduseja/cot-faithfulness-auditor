@@ -7,7 +7,7 @@ DATA_DIR = Path("data")
 
 def test_file_exists():
     assert (DATA_DIR / "perturbed_problems.json").exists(), (
-        "Run 01-data-prep first — perturbed_problems.json not found"
+        "Run 01-data-prep first - perturbed_problems.json not found"
     )
 
 
@@ -37,7 +37,7 @@ def test_answers_are_diverse():
     answers = [entry["correct_answer"] for entry in data]
     unique = len(set(answers))
     assert unique >= 50, (
-        f"Only {unique}/150 unique answers — perturbation likely failed"
+        f"Only {unique}/150 unique answers - perturbation likely failed"
     )
 
 
@@ -59,5 +59,5 @@ def test_values_differ_from_gsm8k_originals():
             if abs(float(entry["correct_answer"]) - orig_answer) < 1e-6:
                 matches += 1
     assert matches < 75, (
-        f"{matches}/150 perturbed answers match originals — perturbation likely failed"
+        f"{matches}/150 perturbed answers match originals - perturbation likely failed"
     )

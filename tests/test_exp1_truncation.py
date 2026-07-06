@@ -7,7 +7,7 @@ DATA_DIR = Path("data")
 
 def test_file_exists():
     assert (DATA_DIR / "exp1_truncation_results.json").exists(), (
-        "Run 03-exp1-truncation first — exp1_truncation_results.json not found"
+        "Run 03-exp1-truncation first - exp1_truncation_results.json not found"
     )
 
 
@@ -44,7 +44,7 @@ def test_100pct_match_rate():
                 if t.get("generated_answer") == full_answer:
                     matched += 1
     rate = matched / total if total else 0
-    assert rate >= 0, f"100% truncation match rate {rate:.2f} — should be >= 0"
+    assert rate >= 0, f"100% truncation match rate {rate:.2f} - should be >= 0"
     print(f"  100% truncation match rate: {matched}/{total} ({rate:.0%})")
 
 

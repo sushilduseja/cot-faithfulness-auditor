@@ -1,4 +1,4 @@
-"""LLM client — one seam for all API calls. Groq primary, NVIDIA fallback."""
+"""LLM client - one seam for all API calls. Groq primary, NVIDIA fallback."""
 import os, re, time, random
 from dotenv import load_dotenv
 from groq import Groq, RateLimitError

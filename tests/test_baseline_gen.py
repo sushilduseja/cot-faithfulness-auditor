@@ -7,7 +7,7 @@ DATA_DIR = Path("data")
 
 def test_file_exists():
     assert (DATA_DIR / "baseline_results.json").exists(), (
-        "Run 02-baseline-gen first — baseline_results.json not found"
+        "Run 02-baseline-gen first - baseline_results.json not found"
     )
 
 

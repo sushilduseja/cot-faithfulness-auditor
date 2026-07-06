@@ -1,4 +1,4 @@
-"""Experiment 3: Biased context injection — personality bias + numeric detection."""
+"""Experiment 3: Biased context injection - personality bias + numeric detection."""
 import time
 from dataclasses import asdict
 from src.config import config

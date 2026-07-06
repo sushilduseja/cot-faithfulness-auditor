@@ -1,4 +1,4 @@
-"""Experiment 1: Progressive truncation — truncate CoT at % points, force continuation."""
+"""Experiment 1: Progressive truncation - truncate CoT at % points, force continuation."""
 import time
 from dataclasses import asdict
 from pathlib import Path

@@ -1,4 +1,4 @@
-"""Baseline generation — parallel API calls with configurable workers/problems."""
+"""Baseline generation - parallel API calls with configurable workers/problems."""
 import sys, json, time, logging
 from dataclasses import asdict
 from pathlib import Path

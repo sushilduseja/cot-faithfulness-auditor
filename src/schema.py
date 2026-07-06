@@ -1,4 +1,4 @@
-"""Result schemas for all experiments — uniform types across the pipeline."""
+"""Result schemas for all experiments - uniform types across the pipeline."""
 from dataclasses import dataclass, asdict
 from typing import Any
 

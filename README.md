@@ -4,7 +4,7 @@ Test whether LLM chain-of-thought (CoT) reasoning is causally linked to the fina
 
 ## Thesis
 
-If CoT is epiphenomenal — generated *after* the answer is already determined — then corrupting, truncating, or biasing the CoT should not affect the output. If CoT is causal, these interventions should degrade or shift accuracy.
+If CoT is epiphenomenal - generated *after* the answer is already determined - then corrupting, truncating, or biasing the CoT should not affect the output. If CoT is causal, these interventions should degrade or shift accuracy.
 
 ## Setup
 
@@ -12,7 +12,7 @@ If CoT is epiphenomenal — generated *after* the answer is already determined �
 uv venv
 uv pip install -e .
 cp env.example .env
-# Edit .env with your Groq and NVIDIA API keys (the rtk guard blocks .env* files from being committed — .env stays local)
+# Edit .env with your Groq and NVIDIA API keys (the rtk guard blocks .env* files from being committed - .env stays local)
 ```
 
 ## Pipeline
@@ -30,7 +30,7 @@ cp env.example .env
 
 ### 1. Progressive Truncation
 
-Truncate each CoT at 5 levels (10%–100%) and force the model to continue. The original problem text is provided alongside the partial CoT to isolate reasoning degradation from information loss. Truncation is sentence-based (split by `. `) to avoid mid-word or mid-arithmetic cuts. If the answer flips after truncation, the cut portion was causally relevant. Run count: `NUM_PROBLEMS × 5`.
+Truncate each CoT at 5 levels (10%-100%) and force the model to continue. The original problem text is provided alongside the partial CoT to isolate reasoning degradation from information loss. Truncation is sentence-based (split by `. `) to avoid mid-word or mid-arithmetic cuts. If the answer flips after truncation, the cut portion was causally relevant. Run count: `NUM_PROBLEMS × 5`.
 
 ### 2. Text-Level String Corruption
 
@@ -39,7 +39,7 @@ Garble the CoT using three strategies:
 - **Semantic**: Replace one numeric value with a plausible wrong number
 - **Deletion**: Remove 10% of words
 
-The original problem text is provided alongside the corrupted CoT. If the model ignores garbled reasoning and solves correctly from the clean problem, the CoT was decorative. All corruptions use pure Python rules — no local model downloads.
+The original problem text is provided alongside the corrupted CoT. If the model ignores garbled reasoning and solves correctly from the clean problem, the CoT was decorative. All corruptions use pure Python rules - no local model downloads.
 
 ### 3. Biased Context Injection
 
@@ -67,7 +67,7 @@ All tunables via environment variables:
 src/
 ├── config.py          # Env-var configuration (single source of tunables)
 ├── schema.py          # ExperimentResult dataclasses (uniform types)
-├── llm.py             # LLMClient — Groq primary + NVIDIA fallback (one seam)
+├── llm.py             # LLMClient - Groq primary + NVIDIA fallback (one seam)
 ├── corrupt.py         # String corruption rules (pure functions, no deps)
 ├── runner.py          # Shared experiment runner (I/O, iteration, progress)
 ├── run_visualize.py   # Chart generation
@@ -83,9 +83,9 @@ No local model downloads. All LLM interactions go through one seam in `llm.py` w
 
 ## Charts
 
-- `data/chart1_truncation.png` — Accuracy by truncation percentage
-- `data/chart2_corruption.png` — Accuracy by corruption type
-- `data/chart3_bias.png` — Bias flag rate with CI
+- `data/chart1_truncation.png` - Accuracy by truncation percentage
+- `data/chart2_corruption.png` - Accuracy by corruption type
+- `data/chart3_bias.png` - Bias flag rate with CI
 
 ## Tests
 
@@ -93,4 +93,4 @@ No local model downloads. All LLM interactions go through one seam in `llm.py` w
 NUM_PROBLEMS=20 pytest tests/ -v
 ```
 
-Tests read problem count from `$NUM_PROBLEMS` — run at POC scale (20) or full scale.
+Tests read problem count from `$NUM_PROBLEMS` - run at POC scale (20) or full scale.

@@ -12,7 +12,7 @@ Chain of Thought prompting is treated as a causal mechanism for reasoning. This 
 
 ## Architecture and Tooling
 
-* **API providers (fallback chain):** Groq (`llama-3.1-8b-instant`) primary, NVIDIA NIM (`meta/llama-3.1-8b-instruct`) automatic fallback. Both are text-level APIs — no local model downloads.
+* **API providers (fallback chain):** Groq (`llama-3.1-8b-instant`) primary, NVIDIA NIM (`meta/llama-3.1-8b-instruct`) automatic fallback. Both are text-level APIs - no local model downloads.
 * **Token corruption:** Pure Python string-level rules in `src/corrupt.py` (random character substitution, one-number replacement, word deletion). No PyTorch, no local inference.
 * **Decoding control:** temperature=0, fixed seed, greedy decoding on every call.
 * **Environment:** Python CLI scripts (`src/experiments/*.py`), configurable via env vars.
@@ -25,14 +25,14 @@ Chain of Thought prompting is treated as a causal mechanism for reasoning. This 
 Tests whether the model commits to an answer before the CoT is complete.
 
 1. Generate the full CoT and final answer for each of the problems via baseline.
-2. For each CoT, create 5 truncation points: 10%, 25%, 50%, 75%, 100% of sentences (split by `. ` — avoids mid-word cuts).
+2. For each CoT, create 5 truncation points: 10%, 25%, 50%, 75%, 100% of sentences (split by `. ` - avoids mid-word cuts).
 3. At each truncation point, feed the **original problem text** plus the truncated CoT back into the model and let it continue generation to a final answer. Do not ask a separate meta-question like "what do you think the answer is." Force continuation from the cut point, matching how the original CoT would have continued.
 4. Record the final answer at each truncation point against the full-CoT baseline answer.
 5. Plot match rate against the baseline as a function of truncation percentage. A flat curve that reaches near-baseline accuracy at 10% means the model decided early and the remaining 90% of the CoT is decorative.
 
 ### Experiment 2: Text-Level String Corruption
 
-Tests whether garbling the CoT at the text level changes the answer. Uses pure Python string corruption — no tokenizer or tensor manipulation needed.
+Tests whether garbling the CoT at the text level changes the answer. Uses pure Python string corruption - no tokenizer or tensor manipulation needed.
 
 1. Take the full CoT from the baseline.
 2. Run three corruption conditions:
@@ -40,7 +40,7 @@ Tests whether garbling the CoT at the text level changes the answer. Uses pure P
    - **Semantic substitution:** Replace one correct intermediate number with a plausible wrong one. Tests whether the model follows its own stated arithmetic.
    - **Deletion:** Remove 10% of words. Tests sensitivity to partial information loss.
 3. Strip the original `Answer:` line from each CoT before corrupting (so the model must recompute rather than copy the old answer). Feed each corrupted CoT alongside the **original problem text** back into the model and let it continue generation to a final answer.
-4. Compare against the **baseline answer** (`entry["answer"]`) for each problem, per corruption condition. If the model ignores garbled reasoning and solves from the clean problem text, the CoT was decorative — the answer should match the baseline.
+4. Compare against the **baseline answer** (`entry["answer"]`) for each problem, per corruption condition. If the model ignores garbled reasoning and solves from the clean problem text, the CoT was decorative - the answer should match the baseline.
 
 ### Experiment 3: Biased Context Injection
 

@@ -1,4 +1,4 @@
-"""Configuration from environment variables — single source of tunables."""
+"""Configuration from environment variables - single source of tunables."""
 import os
 from dataclasses import dataclass
 
