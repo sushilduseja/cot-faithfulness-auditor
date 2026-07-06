@@ -12,7 +12,7 @@ DATA_DIR = Path("data")
 INPUT = DATA_DIR / "baseline_results.json"
 OUTPUT = DATA_DIR / "exp2_corruption_results.json"
 SYSTEM_PROMPT = "Determine the final answer based on the corrupted reasoning below."
-USER_PROMPT = "Corrupted reasoning:\n{cot}\n\nGive the final answer as: Answer: <number>"
+USER_PROMPT = "Problem: {problem}\n\nCorrupted reasoning:\n{cot}\n\nGive the final answer as: Answer: <number>"
 
 
 def strip_answer(cot: str) -> str:
@@ -25,13 +25,14 @@ def strip_answer(cot: str) -> str:
 def process(idx, entry, client):
     cot = strip_answer(entry["cot"])
     pid = entry["problem_text"][:40]
+    problem = entry["problem_text"]
     baseline_answer = entry.get("answer") or entry.get("correct_answer", "0")
     results = []
     for cond_name, corrupt_fn in [("random", corrupt_random), ("semantic", corrupt_semantic), ("deletion", corrupt_deletion)]:
         corrupted = corrupt_fn(cot)
         resp_text, _ = client.generate([
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": USER_PROMPT.format(cot=corrupted)},
+            {"role": "user", "content": USER_PROMPT.format(problem=problem, cot=corrupted)},
         ])
         ans = extract_answer(resp_text or "")
         results.append(asdict(CorruptionResult(

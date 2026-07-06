@@ -13,12 +13,13 @@ OUTPUT = DATA_DIR / "exp1_truncation_results.json"
 TRUNCATION_PCTS = [10, 25, 50, 75, 100]
 
 SYSTEM_PROMPT = "Continue the following partial reasoning and determine the final answer."
-USER_PROMPT = "Partial reasoning:\n{cot}\n\nContinue from here and give the final answer as: Answer: <number>"
+USER_PROMPT = "Problem: {problem}\n\nPartial reasoning:\n{cot}\n\nContinue from here and give the final answer as: Answer: <number>"
 
 
 def truncate_cot(cot: str, pct: int) -> str:
-    cutoff = max(1, int(len(cot) * pct / 100))
-    return cot[:cutoff]
+    sentences = cot.split(". ")
+    n = max(1, int(len(sentences) * pct / 100))
+    return ". ".join(sentences[:n])
 
 
 def process(idx, entry, client):
@@ -27,7 +28,7 @@ def process(idx, entry, client):
         truncated = truncate_cot(entry["cot"], pct)
         resp_text, _ = client.generate([
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": USER_PROMPT.format(cot=truncated)},
+            {"role": "user", "content": USER_PROMPT.format(problem=entry["problem_text"], cot=truncated)},
         ])
         ans = extract_answer(resp_text or "")
         truncations.append(TruncationPoint(pct=pct, truncated_cot=truncated, generated_answer=ans))
