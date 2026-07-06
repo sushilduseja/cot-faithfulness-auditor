@@ -7,8 +7,8 @@ Chain of Thought prompting is treated as a causal mechanism for reasoning. This 
 ## Data Prep (do this first, it gates everything else)
 
 1. Pull 150 problems from GSM8K via HuggingFace `datasets`.
-2. Perturb each problem: replace the numeric values with new random values in the same range, regenerate the correct answer programmatically. This keeps the reasoning structure and removes memorization as an explanation for correct answers.
-3. Store as `(problem_text, correct_answer)` pairs. This perturbed set is the only set used in Experiments 1 to 3.
+2. Perturb each problem: replace the numeric values with new random values in the same range. The original GSM8K answer is stored as metadata only.
+3. Downstream experiments compare against the **baseline-generated answer** (`entry["answer"]`) rather than the stored `correct_answer`, since number substitution in the answer chain mutilates intermediate results and makes programmatic recomputation unreliable.
 
 ## Architecture and Tooling
 
@@ -30,7 +30,7 @@ Tests whether the model commits to an answer before the CoT is complete.
 4. Record the final answer at each truncation point against the full-CoT baseline answer.
 5. Plot match rate against the baseline as a function of truncation percentage. A flat curve that reaches near-baseline accuracy at 10% means the model decided early and the remaining 90% of the CoT is decorative.
 
-### Experiment 2: Token-Level Corruption
+### Experiment 2: Text-Level String Corruption
 
 Tests whether garbling the CoT at the text level changes the answer. Uses pure Python string corruption — no tokenizer or tensor manipulation needed.
 
@@ -39,8 +39,8 @@ Tests whether garbling the CoT at the text level changes the answer. Uses pure P
    - **Random substitution:** Replace 15% of characters with random ASCII. Tests robustness to noise.
    - **Semantic substitution:** Replace one correct intermediate number with a plausible wrong one. Tests whether the model follows its own stated arithmetic.
    - **Deletion:** Remove 10% of words. Tests sensitivity to partial information loss.
-3. Feed each corrupted CoT back into the model (via the API seam) and let it continue generation to a final answer.
-4. Compare against the ground truth for each corruption type, separately.
+3. Strip the original `Answer:` line from each CoT before corrupting (so the model must recompute rather than copy the old answer). Feed each corrupted CoT back into the model and let it continue generation to a final answer.
+4. Compare against the **baseline answer** (`entry["answer"]`) for each problem, per corruption condition.
 
 ### Experiment 3: Biased Context Injection
 
@@ -55,16 +55,18 @@ Tests whether the CoT adaptively rationalizes an irrelevant bias rather than com
 
 ```bash
 # POC scale (20 problems)
-NUM_PROBLEMS=20 python src/run_baseline.py
-NUM_PROBLEMS=20 python src/run_exp1_truncation.py
-NUM_PROBLEMS=20 python src/run_exp2_corruption.py
-NUM_PROBLEMS=20 python src/run_exp3_bias.py
-python src/run_visualize.py
+NUM_PROBLEMS=20 cot-baseline        # or: python -c "import sys; sys.path.insert(0,'.'); __import__('src.experiments.baseline').experiments.baseline.main()"
+NUM_PROBLEMS=20 cot-truncation
+NUM_PROBLEMS=20 cot-corruption
+NUM_PROBLEMS=20 cot-bias
+cot-visualize
 
-# Full scale (150 problems)
-NUM_PROBLEMS=150 python src/run_baseline.py
+# Full scale
+NUM_PROBLEMS=150 cot-baseline
 # ... same pattern
 ```
+
+Entry points are defined in `pyproject.toml` `[project.scripts]`. Install via `pip install -e .` to use `cot-*` commands.
 
 ## What to Visualize
 
@@ -78,7 +80,7 @@ All tunables via environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `NUM_PROBLEMS` | 150 | Problems to process per experiment |
+| `NUM_PROBLEMS` | 20 | Problems to process per experiment (env var to override) |
 | `RUNS_PER_CONDITION` | 1 | Repetitions per condition |
 | `PRIMARY_PROVIDER` | groq | LLM provider (groq → nvidia fallback) |
 | `GROQ_MODEL` | llama-3.1-8b-instant | Model name for Groq |
@@ -92,6 +94,6 @@ All tunables via environment variables:
 
 ```bash
 pip install -e .
-NUM_PROBLEMS=20 python -m pytest tests/ -v
-NUM_PROBLEMS=150 python -m pytest tests/ -v
+NUM_PROBLEMS=20 pytest tests/ -v
+NUM_PROBLEMS=150 pytest tests/ -v
 ```

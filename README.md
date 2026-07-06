@@ -12,20 +12,19 @@ If CoT is epiphenomenal — generated *after* the answer is already determined �
 uv venv
 uv pip install -e .
 cp env.example .env
-# Edit .env with your Groq and NVIDIA API keys
+# Edit .env with your Groq and NVIDIA API keys (the rtk guard blocks .env* files from being committed — .env stays local)
 ```
 
 ## Pipeline
 
 | Step | Description | Output |
 |------|-------------|--------|
-| 01-data-prep | Perturb 150 GSM8K problems (replace numeric values) | `data/perturbed_problems.json` |
+| 01-data-prep | Perturb GSM8K problems (replace numeric values) | `data/perturbed_problems.json` |
 | 02-baseline-gen | Run problems through Groq → NVIDIA fallback | `data/baseline_results.json` |
 | 03-exp1-truncation | Truncate CoT at 10/25/50/75/100%, force continuation | `data/exp1_truncation_results.json` |
 | 04-exp2-corruption | Text-level string corruption (random, semantic, deletion) | `data/exp2_corruption_results.json` |
 | 05-exp3-bias | Inject personality bias, detect rationalization | `data/exp3_bias_results.json` |
 | 06-visualize | Publication charts with bootstrapped 95% CIs | `data/chart*.png` |
-| 07-readme | This file | `README.md` |
 
 ## Experiments
 
@@ -56,7 +55,7 @@ All tunables via environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `NUM_PROBLEMS` | 150 | Problems to process per experiment |
+| `NUM_PROBLEMS` | 20 | Problems to process per experiment (env var to override) |
 | `RUNS_PER_CONDITION` | 1 | Repetitions per condition |
 | `PRIMARY_PROVIDER` | groq | LLM provider (groq → nvidia fallback) |
 | `GROQ_MODEL` | llama-3.1-8b-instant | Model name for Groq |
@@ -73,14 +72,15 @@ src/
 ├── config.py          # Env-var configuration (single source of tunables)
 ├── schema.py          # ExperimentResult dataclasses (uniform types)
 ├── llm.py             # LLMClient — Groq primary + NVIDIA fallback (one seam)
-├── corrupt.py         # Token corruption rules (pure functions, no deps)
-├── experiments/
-│   ├── baseline.py    # Parallel baseline generation
-│   ├── truncation.py  # Experiment 1
-│   ├── corruption.py  # Experiment 2
-│   └── bias.py        # Experiment 3
-├── run_*.py           # Thin CLI entry points
-└── run_visualize.py   # Chart generation
+├── corrupt.py         # String corruption rules (pure functions, no deps)
+├── runner.py          # Shared experiment runner (I/O, iteration, progress)
+├── run_visualize.py   # Chart generation
+└── experiments/
+    ├── baseline.py    # Parallel baseline generation
+    ├── data_prep.py   # Data preparation (GSM8K perturbation)
+    ├── truncation.py  # Experiment 1
+    ├── corruption.py  # Experiment 2
+    └── bias.py        # Experiment 3
 ```
 
 No local model downloads. All LLM interactions go through one seam in `llm.py` with automatic Groq → NVIDIA fallback.
@@ -94,7 +94,7 @@ No local model downloads. All LLM interactions go through one seam in `llm.py` w
 ## Tests
 
 ```bash
-NUM_PROBLEMS=20 rtk pytest tests/ -v
+NUM_PROBLEMS=20 pytest tests/ -v
 ```
 
-Tests read problem count from `$NUM_PROBLEMS` — run at POC scale (20) or full scale (150).
+Tests read problem count from `$NUM_PROBLEMS` — run at POC scale (20) or full scale.
